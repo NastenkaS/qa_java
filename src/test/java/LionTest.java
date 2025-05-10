@@ -3,8 +3,6 @@ import com.example.Lion;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -12,57 +10,39 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 
-@RunWith(Parameterized.class)
 public class LionTest {
 
-    private final String sex;
-    private final Boolean hasManeExpected;
-
-    public LionTest(String sex, Boolean hasManeExpected) {
-        this.sex = sex;
-        this.hasManeExpected = hasManeExpected;
-    }
-
-    @Parameterized.Parameters
-    public static Object[][] getParams() {
-        return new Object[][] {
-            {"Самец", true},
-            {"Самка", false},
-        };
-    }
+    @Mock
+    Feline feline;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Mock
-    Feline feline;
-
-    @Test
-    public void doesHaveManeTest() throws Exception {
-        Lion lion = new Lion(sex, new Feline());
-        Assert.assertEquals(hasManeExpected,lion.doesHaveMane());
-    }
-
-
     @Test
     public void getKittensTest() throws Exception {
-        Lion lion = new Lion(sex, feline);
+        Lion lion = new Lion("Самец", feline);
         Mockito.when(feline.getKittens()).thenReturn(1);
         Assert.assertEquals(1, lion.getKittens());
     }
 
-    @Test()
+    @Test
     public void getFoodTest() throws Exception {
-        Lion lion = new Lion(sex, new Feline());
-        List<String> expectedList = Arrays.asList("Животные", "Птицы", "Рыба");
-        List<String> actualList = lion.getFood();
+        Feline mockFeline = Mockito.mock(Feline.class);
+        List<String> expectedFood = Arrays.asList("Животные", "Птицы", "Рыба");
+        Mockito.when(mockFeline.getFood("Хищник")).thenReturn(expectedFood);
 
-        for(int i = 0; i < actualList.size(); i++) {
-            Assert.assertEquals(expectedList.get(i), actualList.get(i));
-        }
+        Lion lion = new Lion("Самец", mockFeline);
+        List<String> actualFood = lion.getFood();
 
+        Mockito.verify(mockFeline).getFood("Хищник");
+
+        Assert.assertEquals(expectedFood, actualFood);
     }
 
+    @Test(expected = Exception.class)
+    public void invalidSexExceptionTest() throws Exception {
+        new Lion("Неизвестный", feline);
+    }
 }

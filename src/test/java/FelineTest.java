@@ -2,32 +2,12 @@ import com.example.Feline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
 import java.util.List;
 
-@RunWith(Parameterized.class)
 public class FelineTest {
-    private final String animals;
-    private final String birds;
-    private final String fish;
-
-    public FelineTest(String animals, String birds, String fish) {
-        this.animals = animals;
-        this.birds = birds;
-        this.fish = fish;
-    }
-
-    @Parameterized.Parameters
-    public static Object[][] getCheckedDate() {
-        return new Object[][] {
-            {"Животные", "Птицы", "Рыба"},
-        };
-    }
 
     @Before
     public void setup() {
@@ -38,11 +18,9 @@ public class FelineTest {
     public void eatMeatTest() throws Exception {
         Feline feline = new Feline();
         List<String> actualFoodList = feline.eatMeat();
-        List<String> expectedlFoodList = Arrays.asList(animals, birds, fish);
+        List<String> expectedFoodList = List.of("Животные", "Птицы", "Рыба");
 
-        for(int i = 0; i < actualFoodList.size(); i++) {
-            Assert.assertEquals(expectedlFoodList.get(i), actualFoodList.get(i));
-        }
+        Assert.assertEquals(expectedFoodList, actualFoodList);
     }
 
     @Test
@@ -60,4 +38,37 @@ public class FelineTest {
         Mockito.verify(feline).getKittens(1);
     }
 
+    @Test
+    public void getKittensWithoutParameterTest() {
+        Feline felineMock = Mockito.mock(Feline.class);
+
+        Mockito.when(felineMock.getKittens()).thenCallRealMethod();
+        Mockito.when(felineMock.getKittens(1)).thenReturn(1);
+
+        int result = felineMock.getKittens();
+
+        Mockito.verify(felineMock).getKittens(1);
+        Assert.assertEquals(1, result);
+    }
+
+    @Test
+    public void getKittensWithParameterTest() {
+        Feline felineMock = Mockito.mock(Feline.class);
+
+        Mockito.when(felineMock.getKittens(5)).thenReturn(5);
+        Mockito.when(felineMock.getKittens(10)).thenReturn(10);
+
+        Assert.assertEquals(5, felineMock.getKittens(5));
+        Assert.assertEquals(10, felineMock.getKittens(10));
+
+        Mockito.verify(felineMock).getKittens(5);
+        Mockito.verify(felineMock).getKittens(10);
+    }
+
+    @Test
+    public void getKittensDefaultValueTest() {
+        Feline feline = new Feline();
+
+        Assert.assertEquals(1, feline.getKittens());
+    }
 }
