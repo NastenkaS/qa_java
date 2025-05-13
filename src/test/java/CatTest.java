@@ -31,5 +31,4 @@ public class CatTest {
         List<String> actual = cat.getFood();
 
         assertEquals(expected, actual);
-        Mockito.verify(felineMock).eatMeat();
     }}

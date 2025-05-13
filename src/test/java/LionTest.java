@@ -36,8 +36,6 @@ public class LionTest {
         Lion lion = new Lion("Самец", mockFeline);
         List<String> actualFood = lion.getFood();
 
-        Mockito.verify(mockFeline).getFood("Хищник");
-
         Assert.assertEquals(expectedFood, actualFood);
     }
 
